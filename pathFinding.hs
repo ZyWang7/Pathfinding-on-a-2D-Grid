@@ -44,3 +44,9 @@ isLegalPos :: [[Char]] -> (Int,Int) -> Bool
 isLegalPos xs (x,y) = if getAtPos xs (x,y) == 'O' then False
                     else True
 
+
+-- function to get the legal positions from a position
+legalPos :: [[Char]] -> (Int,Int) -> [(Int, Int)]
+legalPos xs (x,y) = [c | c <- [(x-1,y-1), (x-1,y), (x-1,y+1), (x,y-1), (x,y+1), (x+1,y-1), (x+1,y), (x+1, y+1)],
+                     isLegalPos xs c == True]
+
