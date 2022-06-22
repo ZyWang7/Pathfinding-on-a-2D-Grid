@@ -11,6 +11,12 @@ grid = ["S.........",
         "..........",
         ".........E"]
 
+grid2 = ["S..",".O.","..E"]
+grid3 = ["S...",
+         ".O..",
+         "..O.",
+         "...E"]
+
 
 -- change the value of a list in the given index position to a new value
 setAtIndex :: [a] -> Int -> a -> [a]
@@ -49,4 +55,33 @@ isLegalPos xs (x,y) = if getAtPos xs (x,y) == 'O' then False
 legalPos :: [[Char]] -> (Int,Int) -> [(Int, Int)]
 legalPos xs (x,y) = [c | c <- [(x-1,y-1), (x-1,y), (x-1,y+1), (x,y-1), (x,y+1), (x+1,y-1), (x+1,y), (x+1, y+1)],
                      isLegalPos xs c == True]
+
+
+-- get the number of the steps
+numLen :: ([(Int,Int)],Int) -> Int
+numLen (_,n) = n
+
+-- return the path which has the least steps
+getBestPath :: [([(Int,Int)],Int)] -> ([(Int,Int)],Int)
+getBestPath [] = ([],100)
+getBestPath (st : sts) | numLen st < numLen st' = st
+                       | otherwise = st'
+    where
+        st' = getBestPath sts
+
+
+-- find the best path on a grid
+bestPath :: [[Char]] -> (Int,Int) -> ([(Int, Int)],Int)
+bestPath xs (x,y) = getBestPath (paths xs ([], 0) (x,y))
+
+
+-- function to get all the possible paths from a position
+paths :: [[Char]] -> ([(Int,Int)],Int) -> (Int,Int) -> [([(Int,Int)],Int)]
+-- xs->grid, s1->current path, (x,y)->current position
+paths xs (s1, len) (x,y) | getAtPos xs (x, y) == 'E' = [(s1, len)] -- if the current position is the end
+                         | otherwise = concat[paths (blockPos xs (x, y)) 
+                         (s1++[(x,y)], len + 1) (c)| c <- legalPos xs (x,y)]
+                         -- Every time pass a point, turn that point into a wall
+
+
 
